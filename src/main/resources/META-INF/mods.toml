@@ -16,7 +16,7 @@ in a row (limit per caliber + attachment bonus), keeping the stock TaCZ break so
 and particles. Explosive ammo (RPG-7, 40mm, HE) is untouched. Server-side mod:
 install on the server; in singleplayer just put it into mods.
 '''
-authors="fizik"
+authors="KINGofANGMAR15"
 
 [[dependencies.glasspierce]]
     modId="forge"
