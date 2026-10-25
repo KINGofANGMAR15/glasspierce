@@ -1,5 +1,7 @@
 # TACZ Glass Piercing (glasspierce)
 
+**English version: [README_EN.md](README_EN.md)**
+
 Аддон для **TaCZ (Timeless and Classics Zero)** на **Minecraft Forge 1.20.1**:
 одна пуля может пробивать и разрушать **несколько стёкол подряд** (стеклоблоки и стеклянные
 панели), каждое разрушение — с **теми же штатными звуком и частицами**, что и в стоке TaCZ.
