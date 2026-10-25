@@ -1,0 +1,83 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    // ForgeGradle 6 для Minecraft Forge 1.20.1
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    // MixinGradle нужен ТОЛЬКО для варианта A (Mixin). См. комментарии в EntityKineticBulletMixin.
+    id 'org.spongepowered.mixin' version '0.7.+'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+
+    copyIdeResources = true
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', ''
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+        client {
+            property 'forge.enabledGameTestNamespaces', mod_id
+        }
+        server {
+            property 'forge.enabledGameTestNamespaces', mod_id
+            args '--nogui'
+        }
+    }
+}
+
+repositories {
+    // Modrinth Maven — официальный канал поставки зависимостей-модов
+    maven {
+        url 'https://api.modrinth.com/maven'
+        content {
+            includeGroup 'maven.modrinth'
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // TaCZ (Timeless and Classics Zero), ветка 1.20.1.
+    // Берем из Modrinth Maven по slug + version_number.
+    // Альтернатива — cursemaven (указать fileId конкретного jar):
+    //   implementation fg.deobf('curse.maven:timeless-and-classics-zero-852911:<FILE_ID>')
+    implementation fg.deobf("maven.modrinth:timeless-and-classics-zero:${tacz_version}")
+}
+
+// Вариант A требует корректной refmap: MixinGradle выставляет её в процессоре аннотаций.
+// Для целевых классов TaCZ (модифицированные классы) refmap почти пуст:
+// имена классов/методов TaCZ не обфусцированы и не ремапятся. Важно это для Mixin-варианта.
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
+}
+
+tasks.named('jar', Jar).configure {
+    manifest {
+        // Forge подхватывает mixin-конфиг по манифесту (стандартный путь для Forge 1.20.1).
+        attributes 'MixinConfigs': "${mod_id}.mixins.json"
+    }
+}
+
+tasks.named('compileJava').configure {
+    options.encoding = 'UTF-8'
+}

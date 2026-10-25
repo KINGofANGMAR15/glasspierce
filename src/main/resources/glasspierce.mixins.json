@@ -1,0 +1,16 @@
+{
+    "required": true,
+    "minVersion": "0.8.5",
+    "package": "com.fizik.glasspierce.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "refmap": "glasspierce.refmap.json",
+    "mixins": [
+        "EntityKineticBulletMixin",
+        "EntityKineticBulletAccessor"
+    ],
+    "injectors": {
+        // Индивидуальный failsafe для каждого инжектора задаётся в аннотациях (require = 0),
+        // поэтому глобально оставляем строгий дефолт.
+        "defaultRequire": 1
+    }
+}

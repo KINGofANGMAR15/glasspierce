@@ -1,0 +1,37 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="glasspierce"
+# ${file.jarVersion} из шаблонов MDK не используем: он конфликтует с processResources expand.
+version="1.0.0"
+displayName="TACZ Glass Piercing"
+description='''
+Расширяет ограничение TaCZ: пуля может пробивать до N стеклянных блоков/панелей подряд
+(по умолчанию 5), сохраняя штатные звук и частицы разрушения.
+Все параметры — в серверном конфиге (config/glasspierce-server.toml).
+'''
+authors="fizik"
+
+[[dependencies.glasspierce]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.glasspierce]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+# Жёсткая зависимость от TaCZ: оба механизма (event и mixin) работают на его событиях/классах.
+[[dependencies.glasspierce]]
+    modId="tacz"
+    mandatory=true
+    versionRange="[1.1.7,)"
+    ordering="AFTER"
+    side="BOTH"

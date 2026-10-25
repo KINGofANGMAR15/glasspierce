@@ -1,0 +1,23 @@
+# Gradle
+build/
+.gradle/
+out/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+bin/
+eclipse/
+
+# Forge runtime
+run/
+runs/
+libs/
+
+# OS
+.DS_Store
+Desktop.ini
