@@ -7,10 +7,14 @@ modId="glasspierce"
 # ${file.jarVersion} из шаблонов MDK не используем: он конфликтует с processResources expand.
 version="1.0.0"
 displayName="TACZ Glass Piercing"
+# Серверная сторона: клиенты БЕЗ этого мода могут подключаться к серверу С этим модом,
+# и наоборот — мод на чистом клиенте без сервера не даёт эффекта (события только серверные).
+displayTest="IGNORE_ALL_VERSION"
 description='''
-Расширяет ограничение TaCZ: пуля может пробивать до N стеклянных блоков/панелей подряд
-(по умолчанию 5), сохраняя штатные звук и частицы разрушения.
-Все параметры — в серверном конфиге (config/glasspierce-server.toml).
+Extends TaCZ glass behavior: a bullet can pierce and shatter up to N glass blocks/panes
+in a row (limit per caliber + attachment bonus), keeping the stock TaCZ break sound
+and particles. Explosive ammo (RPG-7, 40mm, HE) is untouched. Server-side mod:
+install on the server; in singleplayer just put it into mods.
 '''
 authors="fizik"
 

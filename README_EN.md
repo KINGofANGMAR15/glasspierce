@@ -16,6 +16,9 @@ Key features:
   they explode as normal (a tandem rocket can't get "stuck" in glass without exploding).
 - All settings live in the server config `config/glasspierce-server.toml`
   (in singleplayer: `saves/<world>/serverconfig/glasspierce-server.toml`).
+- **Server-side mod**: install it on the server only; in singleplayer simply put it
+  into `mods` (the integrated server runs it). Clients can join a server with this
+  mod **without having it installed** (`displayTest="IGNORE_ALL_VERSION"`).
 
 ---
 
