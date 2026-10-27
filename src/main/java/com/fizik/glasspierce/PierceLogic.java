@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -70,6 +71,24 @@ public final class PierceLogic {
     public static final String NBT_KEY = "glasspierce:brokenGlass";
     /** Ключ кешированного лимита этой пули (калибр + бусты считаются один раз в первом попадании). */
     public static final String NBT_LIMIT_KEY = "glasspierce:limit";
+
+    /** modId мода TaCZ Tactical Breaching (кривые анимации осколков + HP-урон по стеклу). */
+    private static final String BREACHING_MODID = "tacz_tactical_breaching";
+
+    /** Лениво кешируем наличие breaching-мода (ModList готов к моменту первого события на сервере). */
+    public static boolean isBreachingPresent() {
+        try {
+            return ModList.get().isLoaded(BREACHING_MODID);
+        } catch (Throwable t) {
+            // Преждевременный вызов до инициализации ModList — считаем, что мода нет.
+            return false;
+        }
+    }
+
+    /** Активен ли режим совместимости с breaching'ом (настройка + мод загружен). */
+    public static boolean breachingCompatActive() {
+        return Config.breachingCompat() && isBreachingPresent();
+    }
 
     private PierceLogic() {
     }
@@ -321,6 +340,29 @@ public final class PierceLogic {
         }
 
         int broken = brokenGlassCount(ammo);
+
+        // -------------------------------------------------------------------------
+        // Совместимость с TaCZ Tactical Breaching.
+        // Breaching сам ведёт HP-урон по стеклу, шлёт фирменную анимацию осколков
+        // (ImpactFxPacket -> клиентский GlassShardDebrisManager) и сам продолжает
+        // полёт пули (glass passthrough). Его слушатель — NORMAL-приоритет и
+        // отменённые события не получает, поэтому мы обязаны НЕ трогать событие:
+        // никакой отмены, никакого destroyBlock — иначе его анимации не видны.
+        // Наш вклад в этом режиме: та же система лимитов. Считаем каждое
+        // встреченное пулей стекло; когда лимит исчерпан — гасим пулю ДО запуска
+        // его обработчика (cancel => его слушатель не вызывается).
+        // -------------------------------------------------------------------------
+        if (breachingCompatActive()) {
+            int seen = broken + 1;
+            if (seen > max) {
+                debug(state, "breaching: лимит исчерпан (" + broken + "/" + max + ") — пуля гаснет, стекло остаётся целым");
+                ammo.discard();
+                return true;
+            }
+            setBrokenGlassCount(ammo, seen);
+            debugMsg("breaching: стекло #" + seen + "/" + max + " — отдаём breaching'у (HP-урон + осколки)");
+            return false;
+        }
 
         // Курсор по траектории: точка попадания в текущий блок.
         Vec3 cursor = hitResult.getLocation();

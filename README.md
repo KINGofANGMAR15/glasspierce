@@ -144,6 +144,7 @@
 | `mode` | `EVENT` | Механизм: `EVENT` (вариант B) или `MIXIN` (вариант A). |
 | `breakGlassOnLimitReached` | `false` | Лимит исчерпан и пуля упёрлась в стекло: `false` — стекло цело, пуля гаснет; `true` — стекло тоже ломается штатным вызовом, пуля гаснет (поведение стока). |
 | `respectTaCZDestroyGlass` | `true` | Если админ TaCZ выключил `AmmoConfig.DestroyGlass`, аддон не вмешивается. |
+| `breachingCompat` | `true` | Совместимость с **TaCZ Tactical Breaching** (см. раздел 4): аддон не разрушает стекло сам, обработку (HP-урон + анимация осколков) ведёт breaching, а пер-калибровый лимит нашего аддона продолжает ограничивать число стёкол на пулю. |
 | `checkTerritoryProtection` | `true` | Если стреляющий игрок: перед разрушением постится синтетический `BlockEvent.BreakEvent`; отмена защитным модом = стекло цело, пуля гаснет. |
 | `useVanillaGlassDetection` | `true` | Штатный класс-фильтр TaCZ (AbstractGlassBlock / StainedGlassPaneBlock / IronBarsBlock) в дополнение к тегам. |
 | `debugLog` | `true` | Подробный лог решений (первое событие, каждое пробитие, причины отказов и лимиты калибров). После отладки сервера лучше выключить. |
@@ -167,11 +168,23 @@
   `block_durability` / `blockdurability`): функционал по умолчанию не отключается,
   решение оставлено админу.
 - Выключение TaCZ'овского `DestroyGlass` уважается (`respectTaCZDestroyGlass`).
+- **TaCZ Tactical Breaching** (`tacz_tactical_breaching`): при `breachingCompat = true`
+  (по умолчанию, действует только если мод загружен) наш аддон не разрушает стекло
+  и не отменяет событие — фирменные HP-урон по стеклу и анимация разлёта осколков
+  breaching'а работают как при его одиночной установке. Наш лимит при этом
+  продолжает работать: каждое встреченное пулей стекло инкрементирует счётчик,
+  и когда лимит исчерпан, пуля гаснет о следующее стекло (оно остаётся целым,
+  обработка breaching'ом блокируется отменой события до его слушателя).
+  Нюансы режима: `velocityMultiplierPerBreak` не применяется (скоростью пули
+  управляет breaching), а `damageMultiplierPerBreak` считается по числу
+  *встреченных* стёкол (в HP-модели breaching панель может не разбиться с одного
+  выстрела). Хотите прежнее мгновенное пробитие этого аддона без анимаций —
+  поставьте `breachingCompat = false`.
 
 ## 5. Сборка
 
 ```bash
-./gradlew build            # jar -> build/libs/glasspierce-1.0.0.jar
+./gradlew build            # jar -> build/libs/glasspierce-1.1.0.jar
 ./gradlew runServer        # тестовый сервер (config в run/config/)
 ./gradlew runClient
 ```

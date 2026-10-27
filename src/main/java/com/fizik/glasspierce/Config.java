@@ -106,6 +106,19 @@ public final class Config {
                     "не активировать и наш режим пробития (не ломать стекло, не увеличивать счётчик).")
             .define("respectTaCZDestroyGlass", true);
 
+    private static final ForgeConfigSpec.BooleanValue BREACHING_COMPAT = BUILDER
+            .comment(
+                    "Совместимость с TaCZ Tactical Breaching (tacz_tactical_breaching).",
+                    "Когда этот мод загружен и настройка включена (по умолчанию), наш аддон НЕ разрушает",
+                    "стекло сам: каждый выстрел передаётся его системе HP-урона по стеклу — так работают",
+                    "фирменные анимации разлёта осколков. Наш пер-калибровый лимит при этом продолжает",
+                    "действовать: счётчик считает каждое встреченное пулей стекло, и когда лимит исчерпан,",
+                    "пуля гаснет о следующее стекло (оно остаётся целым), а его обработка breaching'ом",
+                    "блокируется. velocityMultiplierPerBreak в этом режиме не применяется (скоростью",
+                    "управляет breaching). Отключите (false), если хотите вернуться к собственному",
+                    "мгновенному пробитию из этого аддона, игнорируя анимации breaching'а.")
+            .define("breachingCompat", true);
+
     private static final ForgeConfigSpec.BooleanValue CHECK_PROTECTION = BUILDER
             .comment(
                     "Мягкая защита территорий: если стреляющий — игрок, перед разрушением стекла",
@@ -228,6 +241,11 @@ public final class Config {
 
     public static boolean respectTaCZDestroyGlass() {
         return RESPECT_TACZ_DESTROY_GLASS.get();
+    }
+
+    /** Совместимость с TaCZ Tactical Breaching: отдавать стекло его системе HP/осколков. */
+    public static boolean breachingCompat() {
+        return BREACHING_COMPAT.get();
     }
 
     public static boolean checkTerritoryProtection() {

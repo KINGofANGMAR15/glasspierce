@@ -21,3 +21,8 @@ libs/
 # OS
 .DS_Store
 Desktop.ini
+
+# OpenWiki keeps wiki pages local-only (user asked not to commit them)
+openwiki/
+AGENTS.md
+.github/workflows/openwiki-update.yml

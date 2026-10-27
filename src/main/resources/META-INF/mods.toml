@@ -5,7 +5,7 @@ license="MIT"
 [[mods]]
 modId="glasspierce"
 # ${file.jarVersion} из шаблонов MDK не используем: он конфликтует с processResources expand.
-version="1.0.0"
+version="1.1.0"
 displayName="TACZ Glass Piercing"
 # Серверная сторона: клиенты БЕЗ этого мода могут подключаться к серверу С этим модом,
 # и наоборот — мод на чистом клиенте без сервера не даёт эффекта (события только серверные).

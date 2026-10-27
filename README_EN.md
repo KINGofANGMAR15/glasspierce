@@ -148,6 +148,7 @@ on each shot, never leaks between bullets, and needs no cleanup on `EntityLeaveL
 | `mode` | `EVENT` | Mechanism: `EVENT` (variant B) or `MIXIN` (variant A). |
 | `breakGlassOnLimitReached` | `false` | When the limit is exhausted and the bullet hits a glass: `false` — glass stays intact, bullet dies; `true` — the glass also breaks via the stock call, bullet dies (stock behavior). |
 | `respectTaCZDestroyGlass` | `true` | If TaCZ's `AmmoConfig.DestroyGlass` is disabled, the addon does not interfere. |
+| `breachingCompat` | `true` | Compatibility with **TaCZ Tactical Breaching** (see section 4): the addon no longer breaks glass itself; breaching's shatter animation and glass HP system handle it, while this addon's per-caliber limit still caps how many panes one bullet may pass. |
 | `checkTerritoryProtection` | `true` | If the shooter is a player: a synthetic `BlockEvent.BreakEvent` is posted before breaking; if a protection mod cancels it, the glass stays intact and the bullet dies. |
 | `useVanillaGlassDetection` | `true` | TaCZ's stock class filter (AbstractGlassBlock / StainedGlassPaneBlock / IronBarsBlock) in addition to the tags. |
 | `debugLog` | `true` | Verbose decision log (first event, every pierce, rejection reasons, caliber limits). Better to disable on production servers after debugging. |
@@ -171,11 +172,23 @@ Calibers from other gun packs not listed in `ammoLimits` use `maxGlassBreaks`.
   detected (`tacz_tweaks`, `tacz_mechanics`, `block_durability` / `blockdurability`):
   the addon stays enabled by default — the decision is left to the admin.
 - TaCZ's `DestroyGlass` being turned off is respected (`respectTaCZDestroyGlass`).
+- **TaCZ Tactical Breaching** (`tacz_tactical_breaching`): with `breachingCompat = true`
+  (default; only takes effect when that mod is loaded) this addon no longer destroys
+  glass and never cancels the event — breaching's signature glass HP damage and shard
+  animation run exactly as when it is installed alone. The addon's limit still applies:
+  every glass pane the bullet encounters increments the counter, and once the limit is
+  exhausted the bullet dies against the next pane (pane stays whole, breaching's
+  processing is blocked by cancelling the event before its handler). Mode nuances:
+  `velocityMultiplierPerBreak` is not applied (breaching governs bullet speed), and
+  `damageMultiplierPerBreak` counts *encountered* panes (in breaching's HP model a
+  pane may survive a shot). Want this addon's instant piercing without the animations?
+  Set `breachingCompat = false`.
+
 
 ## 5. Building
 
 ```bash
-./gradlew build            # jar -> build/libs/glasspierce-1.0.0.jar
+./gradlew build            # jar -> build/libs/glasspierce-1.1.0.jar
 ./gradlew runServer        # test server (config in run/config/)
 ./gradlew runClient
 ```
